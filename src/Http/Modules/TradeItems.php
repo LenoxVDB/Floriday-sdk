@@ -5,6 +5,11 @@ namespace Lennord\FloridaySdk\Http\Modules;
 use Lennord\FloridaySdk\FloridaySdk;
 use Illuminate\Http\Client\Response;
 
+/**
+ * Module for working with Trade Items in Floriday.
+ *
+ * Provides access to the `/trade-items` endpoint.
+ */
 class TradeItems
 {
     /**
@@ -17,11 +22,14 @@ class TradeItems
     }
 
     /**
-     * Retrieves all trade items.
+     * Retrieve all trade items from Floriday.
      *
-     * @return Response Returns a JSON response containing the trade items data.
-     * If successful, returns the trade items list.
-     * If failed, returns a 500 error with the error message.
+     * Sends a GET request to the `/trade-items` endpoint.
+     *
+     * @return Response The HTTP response from Floriday.
+     *
+     * @throws \Illuminate\Http\Client\RequestException If the response indicates a client/server error.
+     * @throws \Illuminate\Http\Client\ConnectionException If the request cannot reach the server.
      */
     public function getAll(): Response
     {

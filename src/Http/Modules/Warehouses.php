@@ -5,6 +5,11 @@ namespace Lennord\FloridaySdk\Http\Modules;
 use Illuminate\Http\Client\Response;
 use Lennord\FloridaySdk\FloridaySdk;
 
+/**
+ * Module for retrieving warehouse information from Floriday.
+ *
+ * Provides access to the `/warehouses` endpoint.
+ */
 class Warehouses
 {
     /**
@@ -17,15 +22,17 @@ class Warehouses
     }
 
     /**
-     * Retrieves a list of warehouses from the Floriday API.
+     * Retrieve the list of warehouses from Floriday.
      *
-     * This method sends a GET request to the `/warehouses` endpoint of the Floriday API,
-     * including the option to exclude external warehouses by default.
+     * Sends a GET request to the `/warehouses` endpoint. You can optionally
+     * exclude external warehouses by passing `$excludeExternal = true`.
      *
-     * @return array An array containing the list of warehouses retrieved from the API.
+     * @param bool $excludeExternal Whether to exclude external warehouses.
      *
-     * @throws \Illuminate\Http\Client\ConnectionException If there is a connection error.
-     * @throws \Exception If the API response indicates an error.
+     * @return Response The HTTP response from Floriday.
+     *
+     * @throws \Illuminate\Http\Client\ConnectionException If the request cannot reach the server.
+     * @throws \Illuminate\Http\Client\RequestException If the response indicates a client/server error.
      */
     public function get(bool $excludeExternal = false): Response
     {

@@ -5,6 +5,11 @@ namespace Lennord\FloridaySdk\Http\Modules;
 use Lennord\FloridaySdk\FloridaySdk;
 use Illuminate\Http\Client\Response;
 
+/**
+ * Module for interacting with Floriday Batch endpoints.
+ *
+ * Provides operations related to creating and managing batches.
+ */
 class Batch
 {
     /**
@@ -17,15 +22,21 @@ class Batch
     }
 
     /**
-     * Creates a new batch by making a POST request to the specified endpoint with the provided data.
+     * Create a new batch in Floriday.
      *
-     * @param array $data The data to be sent in the request body.
-     * @return Response
+     * Sends a POST request to the `/batches` endpoint with the provided payload.
+     *
+     * @param array $payload The payload to be sent in the request body.
+     *
+     * @return Response The HTTP response from Floriday.
+     *
+     * @throws \Illuminate\Http\Client\RequestException If the response indicates a client/server error.
+     * @throws \Illuminate\Http\Client\ConnectionException If the request cannot reach the server.
      */
-    public function create(array $data): Response
+    public function create(array $payload): Response
     {
         return $this->sdk->http->post('/batches', [
-            'json' => $data
+            'json' => $payload
         ]);
     }
 }

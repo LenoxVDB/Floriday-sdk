@@ -7,18 +7,23 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 
+/**
+ * Module responsible for obtaining OAuth access tokens from Floriday.
+ *
+ * Exposes a method to request a new access token using the client credentials
+ * grant against the configured OAuth endpoint.
+ */
 class Oauth
 {
     /**
-     * Fetches a new authentication token from the Floriday API.
+     * Request a new OAuth access token from Floriday.
      *
-     * This method makes a GET request to the configured OAuth URL to retrieve
-     * a new authentication token for API access.
+     * Uses the client credentials grant with values from configuration.
      *
-     * @return Response Returns a JSON response containing the authentication token.
-     * If successful, returns the token data.
-     * If failed, returns a 500 error with the error message.
-     * @throws RequestException|ConnectionException
+     * @return Response The HTTP response returned by Floriday (JSON with token fields on success).
+     *
+     * @throws RequestException When the response has a client or server error status.
+     * @throws ConnectionException When the request cannot reach the server.
      */
     public function fetchToken(): Response
     {

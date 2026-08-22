@@ -5,6 +5,11 @@ namespace Lennord\FloridaySdk\Http\Modules;
 use Illuminate\Http\Client\Response;
 use Lennord\FloridaySdk\FloridaySdk;
 
+/**
+ * Module for retrieving account identity information from Floriday.
+ *
+ * Exposes a convenient SDK method to call the `/identities` endpoint.
+ */
 class Identities
 {
     /**
@@ -17,14 +22,14 @@ class Identities
     }
 
     /**
-     * Retrieves the identity of a customer from the Floriday API.
+     * Retrieve the identity of the authenticated account from Floriday.
      *
-     * This method sends a GET request to the `/identities` endpoint of the
-     * Floriday API and returns the response as an associative array.
+     * Sends a GET request to the `/identities` endpoint.
      *
-     * @return array The response data from the API in JSON-decoded format.
-     * @throws \Illuminate\Http\Client\RequestException If the request fails.
-     * @throws ConnectionException If there is a connection-related issue.
+     * @return Response The HTTP response from Floriday.
+     *
+     * @throws \Illuminate\Http\Client\RequestException If the response indicates a client/server error.
+     * @throws \Illuminate\Http\Client\ConnectionException If the request cannot reach the server.
      */
     public function get(): Response
     {

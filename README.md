@@ -177,9 +177,18 @@ Notes:
 All HTTP requests are made using Laravel's HTTP client and will call `$response->throw()` under the hood. Catch `\Illuminate\Http\Client\RequestException` for 4xx/5xx responses and `\Illuminate\Http\Client\ConnectionException` for connectivity issues.
 
 ## Testing
+This project uses PHPUnit.
+
+- Run tests:
 ```bash
 composer test
 ```
+
+- Run with coverage (requires Xdebug or PCOV):
+```bash
+composer test-coverage
+```
+If you see “No code coverage driver is available”, enable Xdebug (`xdebug.mode=coverage`) or PCOV in your PHP CLI.
 
 ## Changelog
 Please see [CHANGELOG](CHANGELOG.md) for recent changes.

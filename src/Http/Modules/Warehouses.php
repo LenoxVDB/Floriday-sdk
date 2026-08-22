@@ -36,6 +36,7 @@ class Warehouses
      */
     public function get(bool $excludeExternal = false): Response
     {
-        return $this->sdk->http->get("/warehouses?excludeExternalWarehouses=$excludeExternal");
+        $flag = $excludeExternal ? 'true' : 'false';
+        return $this->sdk->http->get("/warehouses?excludeExternalWarehouses={$flag}");
     }
 }

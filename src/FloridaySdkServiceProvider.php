@@ -4,7 +4,7 @@ namespace Lennord\FloridaySdk;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Lennord\FloridaySdk\Commands\FloridaySdkCommand;
+use Lennord\FloridaySdk\Commands\GenerateFloridayTokenCommand;
 
 class FloridaySdkServiceProvider extends PackageServiceProvider
 {
@@ -17,8 +17,7 @@ class FloridaySdkServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('floriday-sdk')
-            ->hasConfigFile()
-            ->hasMigrations('create_floriday_sdk_table')
-            ->hasCommands([FloridaySdkCommand::class]);
+            ->hasConfigFile('floriday-sdk.php')
+            ->hasCommand(GenerateFloridayTokenCommand::class);
     }
 }

@@ -17,7 +17,6 @@ class FloridaySdkServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('floriday-sdk')
-            ->hasConfigFile('floriday-sdk.php')
-            ->hasCommand(GenerateFloridayTokenCommand::class);
+            ->hasConfigFile('floriday-sdk.php');
     }
 }

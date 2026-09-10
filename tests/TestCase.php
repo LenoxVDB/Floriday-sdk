@@ -2,37 +2,30 @@
 
 namespace Lennord\FloridaySdk\Tests;
 
-use Illuminate\Support\Facades\Config;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Lennord\FloridaySdk\FloridaySdkServiceProvider;
-use Lennord\FloridaySdk\Contracts\CredentialsProvider;
 
 abstract class TestCase extends Orchestra
 {
-    protected function getPackageProviders($app): array
+    protected function getPackageProviders($app)
     {
-        return [FloridaySdkServiceProvider::class];
+        return [
+            FloridaySdkServiceProvider::class,
+        ];
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Sensible default config for tests
-        Config::set('floriday-sdk.base_api_url', 'https://api.test');
-        // Legacy keys used by Oauth module
-        Config::set('floridaysdk.oauth_url', 'https://login.test/oauth/token');
-        Config::set('floridaysdk.client', 'client-id');
-        Config::set('floridaysdk.secret', 'client-secret');
-        Config::set('floridaysdk.scope', 'scope');
-    }
+        // Configure default Floriday SDK config for tests
+        config()->set('floriday-sdk.base_url', 'https://api.test');
+        config()->set('floriday-sdk.oauth_url', 'https://login.test/oauth/token');
+        config()->set('floriday-sdk.client', 'client-id');
+        config()->set('floriday-sdk.secret', 'client-secret');
+        config()->set('floriday-sdk.scope', 'scope-a scope-b');
 
-    protected function fakeCredentials(string $token = 'test-token', string $apiKey = 'api-key'): object
-    {
-        return new class($token, $apiKey) implements CredentialsProvider {
-            public function __construct(private string $bearerToken, private string $apiKey) {}
-            public function getBearerToken(): string { return $this->bearerToken; }
-            public function getApiToken(): string { return $this->apiKey; }
-        };
+        // Use array cache to avoid external dependencies
+        config()->set('cache.default', 'array');
     }
 }

@@ -3,14 +3,13 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lennord/floriday-sdk.svg?style=flat-square)](https://packagist.org/packages/lennord/floriday-sdk)
 [![Total Downloads](https://img.shields.io/packagist/dt/lennord/floriday-sdk.svg?style=flat-square)](https://packagist.org/packages/lennord/floriday-sdk)
 
-A developer-friendly SDK for integrating with the Floriday platform from Laravel/PHP. It provides a thin, expressive wrapper around common Floriday API endpoints (OAuth, Trade Items, Identities, Warehouses, Batches) and a small HTTP client that handles base URL, authentication headers, and error handling.
+A Saloon-powered SDK for integrating with the Floriday platform from Laravel/PHP. It provides a small Saloon Connector plus Resources for common Floriday API endpoints (Token, Trade Items, Identities, Warehouses, Batches). The connector takes care of base URL, default headers, bearer auth, and consistent error handling.
 
-### About Floriday
-Floriday is a digital platform for the international flower and plant industry that connects growers, buyers, and other businesses in the horticultural supply chain. Besides providing an online environment for trading, Floriday offers APIs that allow companies to connect their own software and business systems directly to the platform. These APIs make it possible to automate processes that would otherwise require manual work. For example, businesses can use Floriday’s APIs to exchange product information, manage offers, submit and process orders, and retrieve information about transactions. This allows companies to integrate Floriday with their own ERP, webshop, order-management, or logistics systems. Instead of employees entering the same information into multiple systems, data can be transferred automatically between the company’s software and Floriday. The API is therefore particularly useful for businesses that handle large numbers of flowers, plants, products, or orders and need reliable data exchange. Integration with Floriday can also help businesses improve efficiency, reduce errors, and keep information more consistent across different systems. Developers can build integrations around Floriday’s available API services while following its authentication, data formats, and technical requirements. Depending on the specific API functionality being used, companies need to understand how requests, responses, product data, orders, and other resources are structured. Overall, Floriday’s API turns the platform from simply an online trading environment into a system that can be integrated into a company’s wider digital infrastructure. This enables more automated, scalable, and efficient processes throughout the flower and plant supply chain.
+What is Saloon? Saloon is a modern, type-safe PHP HTTP client. This package builds on Saloon 4 and follows its Connector/Request/Resource patterns so you can use the SDK exactly like any other Saloon integration.
 
 ## Requirements
 - PHP ^8.4
-- Laravel 9/10/11/12/13 (via Illuminate Contracts compatibility)
+- Laravel 11/12/13 (package is compatible with Illuminate Contracts)
 
 ## Installation
 Install via Composer:
@@ -19,7 +18,7 @@ Install via Composer:
 composer require lennord/floriday-sdk
 ```
 
-Publish the config file:
+Publish the config file (optional, but recommended):
 
 ```bash
 php artisan vendor:publish --tag="floriday-sdk-config"
@@ -30,11 +29,11 @@ This package reads its settings from `config/floriday-sdk.php`, which in turn ca
 
 ```php
 return [
-    'base_api_url' => env('FLORIDAY_API_URL', ''),
-    'oauth_url'    => env('FLORIDAY_API_OAUTH_URL', ''),
-    'client'       => env('FLORIDAY_API_CLIENT_ID', ''),
-    'secret'       => env('FLORIDAY_API_CLIENT_SECRET', ''),
-    'scope'        => env('FLORIDAY_API_SCOPE', ''),
+    'base_url'  => env('FLORIDAY_API_URL', ''),
+    'oauth_url' => env('FLORIDAY_API_OAUTH_URL', ''),
+    'client'    => env('FLORIDAY_API_CLIENT_ID', ''),
+    'secret'    => env('FLORIDAY_API_CLIENT_SECRET', ''),
+    'scope'     => env('FLORIDAY_API_SCOPE', ''),
 ];
 ```
 
@@ -48,133 +47,83 @@ FLORIDAY_API_CLIENT_SECRET=your-client-secret
 FLORIDAY_API_SCOPE=your-scope
 ```
 
-## Quick start
-1) Implement `Lennord\FloridaySdk\Contracts\CredentialsProvider` so the SDK can obtain an access token and API key when sending requests.
+## Using the SDK with Saloon
+The main entry point is the Saloon Connector `Lennord\FloridaySdk\FloridayConnector`. It exposes Resources for each endpoint:
 
+- token(): `Lennord\FloridaySdk\Resources\TokenResource`
+- identity(): `Lennord\FloridaySdk\Resources\IdentitiesResource`
+- trade(): `Lennord\FloridaySdk\Resources\TradeItemResource`
+- warehouse(): `Lennord\FloridaySdk\Resources\WarehouseResource`
+- batch(): `Lennord\FloridaySdk\Resources\BatchResource`
+
+Authentication:
+- The connector ships with a trait `HasAuthToken` which will automatically fetch an access token using the Token endpoint and cache it in Laravel Cache. To send an authenticated request, call `withAuthorization()` on the connector before `send()` is executed. The resources in this SDK do that for you under the hood.
+- Floriday also requires an `X-Api-Key` header for some endpoints. You can set it via `withApiKey('your-api-key')` on any resource before calling the method.
+
+### Resolve the connector (Laravel container)
 ```php
-use Lennord\FloridaySdk\Contracts\CredentialsProvider;
+use Lennord\FloridaySdk\FloridayConnector;
 
-class MyCredentials implements CredentialsProvider
-{
-    public function __construct(
-        private string $bearerToken,
-        private string $apiKey,
-    ) {}
-
-    public function getBearerToken(): string { return $this->bearerToken; }
-    public function getApiToken(): string { return $this->apiKey; }
-}
+$floriday = app(FloridayConnector::class);
 ```
 
-2) Create the SDK instance and call the modules:
-
+Or use the provided Facade:
 ```php
-use Lennord\FloridaySdk\FloridaySdk;
+use Lennord\FloridaySdk\Facades\Floriday as FloridayFacade;
 
-$sdk = new FloridaySdk(new MyCredentials($accessToken, $apiKey));
-
-// Example calls
-$items = $sdk->tradeItems->getAll()->json();
-$identity = $sdk->identity->get()->json();
-$warehouses = $sdk->warehouse->get()->json();
+// Example: FloridayFacade::identity()->get()->json();
 ```
 
-## Usage examples
-
-### OAuth
-Request a new access token using the client credentials grant:
-
+### Get an OAuth token (Saloon Response)
 ```php
-$response = $sdk->oauth->fetchToken();
+use Lennord\FloridaySdk\FloridayConnector;
+
+$floriday = app(FloridayConnector::class);
+
+$response = $floriday->token()->get();
 $token = $response->json('access_token');
-```
-
-### Trade items
-```php
-$response = $sdk->tradeItems->getAll();
-$items = $response->json();
 ```
 
 ### Identities
 ```php
-$response = $sdk->identity->get();
-$identity = $response->json();
+$identity = $floriday->identity()->get()->json();
 ```
 
-### Warehouses
+### Trade items
 ```php
-$response = $sdk->warehouse->get(excludeExternal: true);
-$warehouses = $response->json();
+$items = $floriday->trade()->index()->json();
 ```
 
-### Batches
+### Warehouses (optionally exclude external)
+```php
+$warehouses = $floriday->warehouse()->index(excludeExternal: true)->json();
+```
+
+### Batches (create)
 ```php
 $payload = [
     // ... batch fields ...
 ];
-$response = $sdk->batch->create($payload);
-$batch = $response->json();
+$batch = $floriday->batch()->withApiKey('your-api-key')->create($payload)->json();
 ```
 
-## Console: GenerateFloridayTokenCommand (abstract)
-This package ships with an abstract base command `Lennord\FloridaySdk\Commands\GenerateFloridayTokenCommand` that obtains an OAuth access token from Floriday and makes it available via the protected `$this->token` property. You extend this abstract command to decide what to do with the token (for example, print it, store it in the database, cache, or configuration store).
+Notes on headers & auth:
+- Default headers include `Accept: application/json` and `Content-Type: application/json`.
+- `withAuthorization()` is applied within each resource method so you generally don’t need to call it yourself.
+- If you need to set the `X-Api-Key` header globally for a workflow, you can call `withApiKey()` once on any resource before making multiple calls; it adds the header to the underlying connector for subsequent requests in the same instance.
 
-- What it does
-  - Calls `$sdk->oauth->fetchToken()` and extracts the `access_token`.
-  - If a token is returned, it sets `$this->token` and then calls your implementation of `handleToken()`.
-  - Returns a standard CLI exit code (`SUCCESS`/`FAILURE`).
-
-- How to use it
-  1) Create your concrete command by extending the abstract base:
+## Error handling (Saloon)
+This connector uses Saloon’s `AlwaysThrowOnErrors` plugin, which throws exceptions for 4xx/5xx responses. Catch Saloon’s request exceptions when needed, for example:
 
 ```php
-<?php
+use Saloon\Exceptions\Request\RequestException;
 
-namespace App\Console\Commands;
-
-use Lennord\FloridaySdk\Commands\GenerateFloridayTokenCommand;
-
-class FloridayTokenMakeCommand extends GenerateFloridayTokenCommand
-{
-    protected $signature = 'floriday:token:make';
-    protected $description = 'Generate and display/store a Floriday access token';
-
-    protected function handleToken(): int
-    {
-        // `$this->token` now contains the generated access token
-        $this->info('Floriday token: ' . $this->token);
-
-        // Example: store in cache or database
-        // cache()->put('floriday.access_token', $this->token, now()->addHour());
-
-        return self::SUCCESS;
-    }
+try {
+    $items = $floriday->trade()->index()->json();
+} catch (RequestException $e) {
+    // Inspect $e->getResponse() if needed
 }
 ```
-
-  2) Registration (Laravel 11–13): In modern Laravel you typically don't need to manually register the command if it lives in `app/Console/Commands` and you keep the default Kernel. The Kernel already loads that directory. If you've customized it, make sure your Kernel contains a `commands()` method like this:
-
-```php
-protected function commands(): void
-{
-    $this->load(__DIR__.'/Commands');
-
-    require base_path('routes/console.php');
-}
-```
-
-  3) Run it:
-
-```bash
-php artisan floriday:token:make
-```
-
-Notes:
-- The command relies on dependency injection for `Lennord\FloridaySdk\FloridaySdk`, so ensure your configuration and credentials are set.
-- Implement `handleToken()` to persist the token wherever your application expects it.
-
-## Error handling
-All HTTP requests are made using Laravel's HTTP client and will call `$response->throw()` under the hood. Catch `\Illuminate\Http\Client\RequestException` for 4xx/5xx responses and `\Illuminate\Http\Client\ConnectionException` for connectivity issues.
 
 ## Testing
 This project uses PHPUnit.

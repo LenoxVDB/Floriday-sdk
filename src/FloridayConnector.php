@@ -4,6 +4,8 @@ namespace Lennord\FloridaySdk;
 
 use Lennord\FloridaySdk\Concerns\HasAuthToken;
 use Lennord\FloridaySdk\Resources\BatchResource;
+use Lennord\FloridaySdk\Resources\DeliveryOrderResource;
+use Lennord\FloridaySdk\Resources\FulfillmentOrderResource;
 use Lennord\FloridaySdk\Resources\IdentitiesResource;
 use Lennord\FloridaySdk\Resources\TokenResource;
 use Lennord\FloridaySdk\Resources\TradeItemResource;
@@ -65,6 +67,22 @@ class FloridayConnector extends Connector
     public function warehouse(): WarehouseResource
     {
         return new WarehouseResource($this);
+    }
+
+    /**
+     * Returns the fulfillment order resource.
+     */
+    public function fulfillment(): FulfillmentOrderResource
+    {
+        return new FulfillmentOrderResource($this);
+    }
+
+    /**
+     * Returns the delivery order resource.
+     */
+    public function delivery(): DeliveryOrderResource
+    {
+        return new DeliveryOrderResource($this);
     }
 
     /**

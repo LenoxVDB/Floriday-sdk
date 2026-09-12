@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lennord\FloridaySdk\Tests;
 
 use Lennord\FloridaySdk\FloridayConnector;
-use Lennord\FloridaySdk\Resources\Token\TokenRequest;
+use Lennord\FloridaySdk\Resources\Token\GetRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -15,14 +15,14 @@ final class TokenRequestTest extends TestCase
     #[Test]
     public function token_request_uses_oauth_url_and_form(): void
     {
-        $request = new TokenRequest();
+        $request = new GetRequest();
 
         $this->assertSame('https://login.test/oauth/token', $request->resolveEndpoint());
 
         $sdk = app(FloridayConnector::class);
 
         $mock = new MockClient([
-            TokenRequest::class => function ($pendingRequest) {
+            GetRequest::class => function ($pendingRequest) {
                 // Assert method and headers/body
                 $this->assertSame('POST', $pendingRequest->getMethod()->value);
                 $this->assertSame('application/x-www-form-urlencoded', $pendingRequest->headers()->get('Content-Type'));
@@ -40,6 +40,6 @@ final class TokenRequestTest extends TestCase
         $response = $sdk->send($request);
 
         $this->assertSame('abc123', $response->json('access_token'));
-        $mock->assertSent(TokenRequest::class);
+        $mock->assertSent(GetRequest::class);
     }
 }

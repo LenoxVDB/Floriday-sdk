@@ -5,7 +5,7 @@ namespace Lennord\FloridaySdk\Resources\TradeItem;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
-class TradeItemRequest extends Request
+class GetRequest extends Request
 {
     /**
      * @inheritDoc

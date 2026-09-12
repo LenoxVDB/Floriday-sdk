@@ -8,7 +8,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Traits\Body\HasFormBody;
 
-class TokenRequest extends Request implements HasBody
+class GetRequest extends Request implements HasBody
 {
     use HasFormBody;
 

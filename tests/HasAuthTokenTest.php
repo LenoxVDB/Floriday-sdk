@@ -6,8 +6,8 @@ namespace Lennord\FloridaySdk\Tests;
 
 use Illuminate\Support\Facades\Cache;
 use Lennord\FloridaySdk\FloridayConnector;
-use Lennord\FloridaySdk\Resources\Token\TokenRequest;
-use Lennord\FloridaySdk\Resources\TradeItem\TradeItemRequest;
+use Lennord\FloridaySdk\Resources\Token\GetRequest as TokenGetRequest;
+use Lennord\FloridaySdk\Resources\TradeItem\GetRequest as TradeGetRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -22,13 +22,13 @@ final class HasAuthTokenTest extends TestCase
         $sdk = app(FloridayConnector::class);
 
         $mock = new MockClient([
-            TokenRequest::class => MockResponse::make(['access_token' => 'tkn-cache']),
-            TradeItemRequest::class => function ($pendingRequest) {
+            TokenGetRequest::class => MockResponse::make(['access_token' => 'tkn-cache']),
+            TradeGetRequest::class => function ($pendingRequest) {
                 $this->assertSame('Bearer tkn-cache', $pendingRequest->headers()->get('Authorization'));
                 return MockResponse::make(['ok' => true]);
             },
             // Second trade call should NOT trigger another token request due to cache
-            TradeItemRequest::class => MockResponse::make(['ok' => true]),
+            TradeGetRequest::class => MockResponse::make(['ok' => true]),
         ]);
 
         // Attach mock to the connector so internal token request is mocked

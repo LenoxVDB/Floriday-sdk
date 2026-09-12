@@ -3,7 +3,7 @@
 namespace Lennord\FloridaySdk\Resources;
 
 use Lennord\FloridaySdk\Resources\Base\BaseResource;
-use Lennord\FloridaySdk\Resources\TradeItem\TradeItemRequest;
+use Lennord\FloridaySdk\Resources\TradeItem\GetRequest;
 use Saloon\Http\Response;
 
 class TradeItemResource extends BaseResource
@@ -13,6 +13,6 @@ class TradeItemResource extends BaseResource
      */
     public function index(): Response
     {
-        return $this->connector->withAuthorization()->send(new TradeItemRequest());
+        return $this->connector->withAuthorization()->send(new GetRequest());
     }
 }

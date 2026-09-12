@@ -9,7 +9,7 @@ use Saloon\Http\Request;
 use Saloon\Traits\Body\HasFormBody;
 use Saloon\Traits\Body\HasJsonBody;
 
-class BatchRequest extends Request implements HasBody
+class CreateRequest extends Request implements HasBody
 {
     use HasJsonBody;
 

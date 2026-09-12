@@ -3,7 +3,7 @@
 namespace Lennord\FloridaySdk\Resources;
 
 use Lennord\FloridaySdk\Resources\Base\BaseResource;
-use Lennord\FloridaySdk\Resources\Identities\IdentityRequest;
+use Lennord\FloridaySdk\Resources\Identities\GetRequest;
 use Saloon\Http\Response;
 
 class IdentitiesResource extends BaseResource
@@ -13,6 +13,6 @@ class IdentitiesResource extends BaseResource
      */
     public function get(): Response
     {
-        return $this->connector->withAuthorization()->send(new IdentityRequest());
+        return $this->connector->withAuthorization()->send(new GetRequest());
     }
 }

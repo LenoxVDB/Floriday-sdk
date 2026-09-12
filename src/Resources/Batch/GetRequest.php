@@ -1,6 +1,6 @@
 <?php
 
-namespace Lennord\FloridaySdk\Resources\Identities;
+namespace Lennord\FloridaySdk\Resources\Batch;
 
 
 use Saloon\Contracts\Body\HasBody;
@@ -9,8 +9,14 @@ use Saloon\Http\Request;
 use Saloon\Traits\Body\HasFormBody;
 use Saloon\Traits\Body\HasJsonBody;
 
-class IdentityRequest extends Request
+class GetRequest extends Request
 {
+    public function __construct(
+        private string $batchId,
+    )
+    {
+    }
+
     /**
      * @inheritDoc
      */
@@ -21,6 +27,6 @@ class IdentityRequest extends Request
      */
     public function resolveEndpoint(): string
     {
-        return '/identities';
+        return '/batches/' . $this->batchId;
     }
 }

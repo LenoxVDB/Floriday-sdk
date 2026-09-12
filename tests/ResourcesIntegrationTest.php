@@ -6,10 +6,9 @@ namespace Lennord\FloridaySdk\Tests;
 
 use Illuminate\Support\Facades\Cache;
 use Lennord\FloridaySdk\FloridayConnector;
-use Lennord\FloridaySdk\Resources\Batch\BatchRequest;
-use Lennord\FloridaySdk\Resources\Identities\IdentityRequest;
-use Lennord\FloridaySdk\Resources\Token\TokenRequest;
-use Lennord\FloridaySdk\Resources\TradeItem\TradeItemRequest;
+use Lennord\FloridaySdk\Resources\Batch\CreateRequest;
+use Lennord\FloridaySdk\Resources\Identities\GetRequest as IdGetRequest;
+use Lennord\FloridaySdk\Resources\Token\GetRequest as TokenGetRequest;
 use PHPUnit\Framework\Attributes\Test;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -25,14 +24,14 @@ final class ResourcesIntegrationTest extends TestCase
 
         $mock = new MockClient([
             // First call should be the token fetch because of HasAuthToken
-            TokenRequest::class => MockResponse::make(['access_token' => 'token-1']),
-            IdentityRequest::class => function ($pendingRequest) {
+            GetRequest::class => MockResponse::make(['access_token' => 'token-1']),
+            GetRequest::class => function ($pendingRequest) {
                 // Authorization header should be present (Bearer token-1)
                 $auth = $pendingRequest->headers()->get('Authorization');
                 $this->assertSame('Bearer token-1', $auth);
                 return MockResponse::make(['id' => 1]);
             },
-            TradeItemRequest::class => function ($pendingRequest) {
+            GetRequest::class => function ($pendingRequest) {
                 // Ensure default Accept header from connector
                 $this->assertSame('application/json', $pendingRequest->headers()->get('Accept'));
                 return MockResponse::make([['id' => 10]]);
@@ -43,7 +42,7 @@ final class ResourcesIntegrationTest extends TestCase
                 $this->assertSame('true', $pendingRequest->query()->get('excludeExternalWarehouses'));
                 return MockResponse::make([['id' => 50]]);
             },
-            BatchRequest::class => function ($pendingRequest) {
+            CreateRequest::class => function ($pendingRequest) {
                 $this->assertSame('POST', $pendingRequest->getMethod()->value);
                 $this->assertSame('/batches', parse_url($pendingRequest->getUrl(), PHP_URL_PATH));
                 $this->assertSame(['foo' => 'bar'], $pendingRequest->body()->all());

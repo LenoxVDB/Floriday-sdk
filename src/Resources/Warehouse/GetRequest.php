@@ -5,7 +5,7 @@ namespace Lennord\FloridaySdk\Resources\Warehouse;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
-class WarehouseRequest extends Request
+class GetRequest extends Request
 {
     /**
      * The constructor.

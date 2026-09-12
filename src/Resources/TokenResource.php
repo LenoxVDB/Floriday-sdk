@@ -3,7 +3,7 @@
 namespace Lennord\FloridaySdk\Resources;
 
 use Lennord\FloridaySdk\Resources\Base\BaseResource;
-use Lennord\FloridaySdk\Resources\Token\TokenRequest;
+use Lennord\FloridaySdk\Resources\Token\GetRequest;
 use Saloon\Http\Response;
 
 class TokenResource extends BaseResource
@@ -13,6 +13,6 @@ class TokenResource extends BaseResource
      */
     public function get(): Response
     {
-        return $this->connector->send(new TokenRequest());
+        return $this->connector->send(new GetRequest());
     }
 }

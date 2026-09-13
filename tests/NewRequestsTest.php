@@ -89,12 +89,12 @@ final class NewRequestsTest extends TestCase
 
         $mock = new MockClient([
             \Lennord\FloridaySdk\Resources\Token\GetRequest::class => MockResponse::make(['access_token' => 'tok-3']),
-            WarehouseGetRequest::class => function ($p) {
+            function ($p) {
                 $this->assertSame('/warehouses', parse_url($p->getUrl(), PHP_URL_PATH));
                 $this->assertSame('true', $p->query()->get('excludeExternalWarehouses'));
                 return MockResponse::make([]);
             },
-            WarehouseGetRequest::class => function ($p) {
+            function ($p) {
                 $this->assertSame('/warehouses', parse_url($p->getUrl(), PHP_URL_PATH));
                 $this->assertSame('false', $p->query()->get('excludeExternalWarehouses'));
                 return MockResponse::make([]);

@@ -11,12 +11,10 @@ use Lennord\FloridaySdk\Resources\TokenResource;
 use Lennord\FloridaySdk\Resources\TradeItemResource;
 use Lennord\FloridaySdk\Resources\WarehouseResource;
 use Saloon\Http\Connector;
-use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
 class FloridayConnector extends Connector
 {
     use HasAuthToken;
-    use AlwaysThrowOnErrors;
 
     /**
      * @inheritDoc
